@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicVault</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="Logo.png" type="image/x-icon">
+</head>
+<body>
+    <script type="text/javascript">
+        function updateData(id,txt1,link1,txt2,link2,txt3,link3){
+            document.getElementById(id).innerHTML+=
+            '<tr><td id="tdata0"><a href="'+link1+'" target="_blank">'+txt1+
+            '</a></td><td id="tdata1"><a href="'+link2+'" target="_blank">'+txt2+
+            '</a></td><td id="tdata2"><audio controls><source src="'+link3+
+            '"></audio></td></tr>';
+        }
+        function tablehead(){
+            document.getElementById("tble").innerHTML="<tr id='thead'><th>Song</th><th>Artist</th><th>Prewiew</th></tr>";
+        }
+    </script>
+    <Header class="index-header">
+        <div class="logo-img">
+            <img src="Logo.png" alt="Logo" style="height:100%;">
+        </div>
+        <div class="logo-text">
+           <Span>
+                MusicVault
+           </Span>
+        </div>
+    </Header>
+    <div class="sitecontent">
+        <span class="search">
+            <input type="text" class="search-input" id="bname" placeholder="Artist/Band Name">
+            <input type="number" min="1" max="100" class="search-input" id="count" placeholder="Number(1-100)" style="width: 110px;">
+            <button class="button" onclick="tablehead() & fetchData()">Request Data</button>
+        </span>
+        <table id="tble"></table>
+    </div>
+    <footer class="index-footer">
+        <div class="footer-div">
+            MusicVault is a free tool that allows you to easily search for and preview songs from 
+            your favorite artists. It is powered by the iTunes API and provides up-to-date 
+            information on the latest releases.
+        </div>
+    </footer>
+    <script type="text/javascript">
+        function fetchData() {
+            band=document.getElementById("bname").value;
+            count=document.getElementById("count").value;
+
+            httpRequest=new XMLHttpRequest();
+            url="https://itunes.apple.com/search?entity=song&limit="+count+"&term="+band;
+            httpRequest.open("GET", url);
+            httpRequest.send();             
+
+            httpRequest.onreadystatechange=function(){
+                if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    data=JSON.parse(httpRequest.responseText);
+                    for (var i=0; i<data.resultCount; i++) {   
+                        updateData("tble",
+                            data.results[i].trackName, data.results[i].trackViewUrl,
+                            data.results[i].artistName, data.results[i].artistViewUrl,
+                            "Download", data.results[i].previewUrl);
+                    }       
+                }
+            }
+        }
+    </script>
+</body>
+</html>
